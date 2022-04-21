@@ -17,9 +17,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 from taskapp import views
+from taskapp.views import TaskListView
 
 urlpatterns = [
-    path("", views.index, name="index"),
+    # path("", views.index, name="index"),
+    path("", TaskListView.as_view(), name="index"),
     path("previous/", views.index, name="previous"),
     path("task/", views.index, name="create-task"),
     path("task/<int:task_id>/delete/", views.index, name="delete-task"),
