@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, FormView
 from .models import Task, CheckListItem
+from .forms import TaskForm
 
 
 def index(request):
@@ -18,3 +19,13 @@ class TaskListView(TemplateView):
             "tasks": tasks
         })
         return context
+
+
+class TaskCreateView(FormView):
+    template_name = "pages/task_create.html"
+    form_class = TaskForm
+    success_url = "/"
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
