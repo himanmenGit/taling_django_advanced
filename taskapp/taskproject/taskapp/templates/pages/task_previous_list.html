@@ -1,0 +1,21 @@
+{% extends "common.html" %}
+
+{% block content %}
+    <div class="row row-cols-2 row-cols-md-4 g-4 mt-2">
+        {% for item in object_list %}
+            <div class="col">
+                <div class="card text-white bg-secondary mb-3">
+                    <div class="card-header">{{ item.type }}</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.title }}</h5>
+                        <p class="card-text">
+                        <span class="badge bg-light text-dark">
+                            {{ item.due|date:'Y년 m월 d일 H시 i분' }}까지
+                        </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
