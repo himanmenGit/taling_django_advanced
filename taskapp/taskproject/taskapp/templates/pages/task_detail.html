@@ -17,6 +17,17 @@
             </dl>
         </div>
     </div>
+
+    <div class="row">
+    <div class="col-12">
+        <a href="{% url 'create-item' object.id %}">
+            <button class="btn btn-light">
+                <i class="bi bi-plus-square"></i>&nbsp;&nbsp;추가
+            </button>
+        </a>
+    </div>
+    </div>
+
     <table class="table">
         <tbody>
         {% if checklists %}
@@ -24,13 +35,17 @@
                 <tr>
                     <td style="width:20px;">
                         {% if check.checked %}
+                            <a href="{% url 'check-item' object.id check.id %}">
                             <button class="btn btn-link">
-                                <i class="bi bi-check-suqare"></i>
+                                <i class="bi bi-check-square"></i>
                             </button>
+                            </a>
                         {% else %}
+                            <a href="{% url 'check-item' object.id check.id %}">
                             <button class="btn btn-link">
-                                <i class="bi bi-suqare"></i>
+                                <i class="bi bi-square"></i>
                             </button>
+                            </a>
                         {% endif %}
                     </td>
                     <td class="align-middle">
