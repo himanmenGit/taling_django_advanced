@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, resolve_url
 from django.views import View
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
+from django.views.generic.detail import SingleObjectMixin
 from .models import Task, CheckListItem
 from django.utils import timezone
 from django.core.paginator import Paginator
@@ -40,15 +41,28 @@ class TaskPreviousListView(ListView):
     paginate_by = 4
 
 
-class TaskDetailView(DetailView):
+# class TaskDetailView(DetailView):
+#     model = Task
+#     template_name = "pages/task_detail.html"
+#     pk_url_kwarg = "task_id"
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context["checklists"] = CheckListItem.objects.filter(task=kwargs.get("object")).all()
+#         return context
+
+class TaskDetailView(SingleObjectMixin, ListView):
     model = Task
     template_name = "pages/task_detail.html"
     pk_url_kwarg = "task_id"
+    paginate_by = 10
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["checklists"] = CheckListItem.objects.filter(task=kwargs.get("object")).all()
-        return context
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object(Task.objects.all())
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return CheckListItem.objects.filter(task=self.object).all()
 
 
 class CheckListCreateView(CreateView):
@@ -118,4 +132,3 @@ class TaskDeleteView(DeleteView):
     template_name = "pages/task_delete.html"
     success_url = "/"
     pk_url_kwarg = "task_id"
-

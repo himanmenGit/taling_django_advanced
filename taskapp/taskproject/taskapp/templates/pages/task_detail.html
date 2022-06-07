@@ -30,8 +30,8 @@
 
     <table class="table">
         <tbody>
-        {% if checklists %}
-            {% for check in checklists %}
+        {% if page_obj %}
+            {% for check in page_obj %}
                 <tr>
                     <td style="width:20px;">
                         {% if check.checked %}
