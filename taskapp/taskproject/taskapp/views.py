@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, resolve_url
 from django.views import View
-from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView
+from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from .models import Task, CheckListItem
 from django.utils import timezone
 from django.core.paginator import Paginator
@@ -84,6 +84,7 @@ class CheckListUpdateView(View):
         data.save()
         return redirect(self.get_success_url())
 
+
 # class CheckListUpdateView(UpdateView):
 #     model = CheckListItem
 #     # fields = ["checked"]
@@ -100,3 +101,21 @@ class CheckListUpdateView(View):
 #     def get_success_url(self):
 #         return resolve_url("view-task", task_id=str(self.kwargs.get("task_id")))
 #
+
+
+class CheckListDeleteView(DeleteView):
+    model = CheckListItem
+    template_name = "pages/checklist_delete.html"
+    success_url = "/task/{0}/"
+    pk_url_kwarg = "check_id"
+
+    def get_success_url(self):
+        return resolve_url("view-task", task_id=str(self.kwargs.get("task_id")))
+
+
+class TaskDeleteView(DeleteView):
+    model = Task
+    template_name = "pages/task_delete.html"
+    success_url = "/"
+    pk_url_kwarg = "task_id"
+
