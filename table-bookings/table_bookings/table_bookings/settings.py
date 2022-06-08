@@ -21,10 +21,10 @@ env = environ.Env(
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-ROOT_DIR = os.path.dirname(BASE_DIR)
+ROOT_DIR = BASE_DIR.parent
 
 environ.Env.read_env(
-    env_file=os.path.join(ROOT_DIR, ".env")
+    env_file=ROOT_DIR / ".env"
 )
 
 # Quick-start development settings - unsuitable for production
@@ -94,6 +94,9 @@ DATABASES = {
         "USER": env("DB_USER"),
         "PORT": env("DB_PORT"),
         "PASSWORD": env("DB_PASSWORD"),
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        },
     }
 }
 
@@ -129,10 +132,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "web/static"
 ]
+
+MEDIA_ROOT = ROOT_DIR / ".media"
+MEDIA_URL = "/media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
