@@ -1,15 +1,23 @@
 {% extends "common.html" %}
+{% load socialaccount %}
+
 {% block title %}
     로그인
 {% endblock %}
 
 {% block content %}
+    {% providers_media_js %}
     <section>
         <h1>로그인</h1>
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">로그인</button>
+            <br>
+            <a href="{% provider_login_url 'google' %}">구글 로그인</a>
+            <br>
+            <a href="{% provider_login_url 'kakao' %}">카카오 로그인</a>
+            <br>
         </form>
     </section>
 {% endblock %}

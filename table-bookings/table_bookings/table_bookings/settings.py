@@ -49,8 +49,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django.contrib.sites",
 
     "web",
+
+    # All auth
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.auth0",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.kakao",
 ]
 
 MIDDLEWARE = [
@@ -61,6 +70,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+AUTHENTICATION_BACKENDS = [
+    "allauth.account.auth_backends.AuthenticationBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
 ROOT_URLCONF = 'table_bookings.urls'
@@ -144,3 +158,31 @@ MEDIA_URL = "/media/"
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Email
+EMAIL_BACKEND = "django_ses.SESBackend"
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+AWS_SES_REGION_NAME = env("AWS_SES_REGION_NAME")
+AWS_SES_REGION_ENDPOINT = env("AWS_SES_REGION_ENDPOINT")
+
+# All auth
+SITE_ID = 1
+LOGIN_REDIRECT_URL = "index"
+ACCOUNT_LOGOUT_REDIRECT_URL = "index"
+ACCOUNT_LOGOUT_ON_GET = True
+SOCIALACCOUNT_LOGIN_ON_GET = True
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": [
+            "profile", "email"
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online"
+        }
+    },
+}
