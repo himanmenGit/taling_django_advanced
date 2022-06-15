@@ -1,4 +1,5 @@
 {% extends "common.html" %}
+{% load static %}
 {% load search_tags %}
 {% block title %}
     검색 결과
@@ -10,6 +11,15 @@
             {% render_search_bar %}
         </div>
     </section>
+
+    <!-- Ajax 페이징 시 기존 쿼리 정보 -->
+    <input type="hidden" id="result-keyword" value="{{ selected_keyword }}">
+    <input type="hidden" id="result-category" value="{{ selected_category.id }}">
+    <input type="hidden" id="result-weekday" value="{{ selected_weekday }}">
+    <input type="hidden" id="result-start" value="{{ selected_start }}">
+    <input type="hidden" id="result-end" value="{{ selected_end }}">
+
+
     <section class="mt-4">
         <h4>검색 결과</h4>
         <div class="row" id="search-result">
@@ -21,14 +31,26 @@
                         </div>
                         <img src="{{ restaurant.main_image.image }}" alt="" class="card-img-top">
                         <div class="card-body">
-                            <h5 class="card-title">
-                                {{ restaurant.name }}
-                                <p class="card-text">{{ restaurant.address }}</p>
-                            </h5>
+                            <h5 class="card-title">{{ restaurant.name }}</h5>
+                            <p class="card-text">{{ restaurant.address }}</p>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     </section>
+    <script src="{% static 'search.js' %}"></script>
+    <template id="restaurant-template">
+        <div class="col-sm-3 mb-2 mt-2">
+            <div class="card">
+                <div class="card-header item-category">
+                </div>
+                <img src="" alt="" class="card-img-top item-image">
+                <div class="card-body">
+                    <h5 class="card-title item-name"></h5>
+                    <p class="card-text item-address"></p>
+                </div>
+            </div>
+        </div>
+    </template>
 {% endblock %}

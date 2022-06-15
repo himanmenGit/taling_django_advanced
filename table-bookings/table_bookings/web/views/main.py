@@ -1,11 +1,8 @@
-import datetime
+from django.views.generic import TemplateView, View
+from django.http import JsonResponse
 
-from django.core.paginator import Paginator
-from django.views.generic import TemplateView
-from django.shortcuts import get_object_or_404
-from django.db.models import Q
-
-from ..models import Recommendation, Restaurant, Category
+from ..models import Recommendation
+from .service.search import RestaurantSearch
 
 
 class IndexView(TemplateView):
@@ -24,7 +21,7 @@ class IndexView(TemplateView):
         return context
 
 
-class SearchView(TemplateView):
+class SearchView(TemplateView, RestaurantSearch):
     template_name = "main/search.html"
 
     def get_context_data(self, **kwargs):
@@ -36,51 +33,34 @@ class SearchView(TemplateView):
         start_time = self.request.GET.get("start")
         end_time = self.request.GET.get("end")
 
-        category = None
+        return self.search(keyword, category_id, weekday, start_time, end_time, page_number)
 
-        queryset = Restaurant.objects.filter(visible=True).order_by("-created_at")
-        if keyword:
-            queryset = queryset.filter(Q(name__istartswith=keyword) | Q(address__istartswith=keyword))
-        if category_id:
-            category = get_object_or_404(Category, id=int(category_id))
-            queryset = queryset.filter(category=category)
 
-        relation_conditions = None
+class SearchJsonView(View, RestaurantSearch):
+    def get(self, reqeust):
+        page_number = self.request.GET.get("page", 1)
+        keyword = self.request.GET.get("keyword")
+        category_id = self.request.GET.get("category")
 
-        if weekday:
-            # SELECT * FROM Restaurant r INNER JOIN RestaurantTable rt ON rt.restaurant_id = r.id
-            # WHERE rt.weekday = :weekday
-            relation_conditions = Q(restauranttable__weekday=weekday)
+        weekday = self.request.GET.get("weekday")
+        start_time = self.request.GET.get("start")
+        end_time = self.request.GET.get("end")
 
-        if start_time:
-            start_time = datetime.time.fromisoformat(start_time)
+        data = self.search(keyword, category_id, weekday, start_time, end_time, page_number)
 
-            if relation_conditions:
-                relation_conditions = relation_conditions & Q(restauranttable__time__gte=start_time)
-            else:
-                relation_conditions = Q(restauranttable__time__gte=start_time)
-
-        if end_time:
-            end_time = datetime.time.fromisoformat(end_time)
-
-            if relation_conditions:
-                relation_conditions = relation_conditions & Q(restauranttable__time__lte=end_time)
-            else:
-                relation_conditions = Q(restauranttable__time__lte=end_time)
-
-        if relation_conditions:
-            queryset = queryset.filter(relation_conditions)
-
-        restaurants = queryset.distinct().all()
-        paginator = Paginator(restaurants, 12)
-
-        paging = paginator.get_page(page_number)
-
-        return {
-            "paging": paging,
-            "selected_keyword": keyword,
-            "selected_category": category,
-            "selected_weekday": weekday,
-            "selected_start": datetime.time.isoformat(start_time) if start_time else "",
-            "selected_end": datetime.time.isoformat(end_time) if end_time else "",
+        result_list = list(
+            map(
+                lambda restaurant: {
+                    "id": restaurant.id,
+                    "name": restaurant.name,
+                    "address": restaurant.address,
+                    "image": str(restaurant.main_image.image),
+                    "category_name": restaurant.category.name
+                }, data.get("paging")
+            )
+        )
+        results = {
+            "has_next_page": data.get("has_next_page", False),
+            "object_list": result_list
         }
+        return JsonResponse(results, safe=False)
