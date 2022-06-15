@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from web.views.main import IndexView
+from web.views.main import IndexView, SearchView
 from web.views.users import RegisterView, LoginView, LogoutView, VerificationView
 
 urlpatterns = [
@@ -27,6 +27,8 @@ urlpatterns = [
     path("login/", LoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("verify/", VerificationView.as_view(), name="verification"),
+
+    path("search/", SearchView.as_view(), name="search"),
 
     path("oauth/", include("allauth.urls")),
     path('__debug__/', include('debug_toolbar.urls')),

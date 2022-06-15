@@ -1,0 +1,29 @@
+<form class="col-md-12" action="{% url 'search' %}" method="get">
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label for="inputCategory">카테고리</label>
+            <select id="inputCategory" class="form-control" name="category">
+                {% if selected_category %}
+                    <option>전체</option>
+                {% else %}
+                    <option selected>전체</option>
+                {% endif %}
+
+                {% for category in fetched_categories %}
+                    {% if selected_category == category %}
+                        <option value="{{ category.id }}" name="category" selected>{{ category.name }}</option>
+                    {% else %}
+                        <option value="{{ category.id }}" name="category">{{ category.name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="inputKeyword">검색어</label>
+            <input type="text" class="form-control" name="keyword" id="inputKeyword" value="{{ selected_keyword }}">
+        </div>
+        <div class="form-group col-md-2 d-flex align-items-end flex-row">
+            <button id="submitSearch" type="submit" class="btn btn-primary">검색</button>
+        </div>
+    </div>
+</form>
