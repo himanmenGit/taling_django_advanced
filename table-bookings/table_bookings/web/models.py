@@ -48,7 +48,7 @@ class RestaurantImage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
 
-class RestaurnatTable(models.Model):
+class RestaurantTable(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
 
     class Weekday(models.TextChoices):
@@ -58,7 +58,7 @@ class RestaurnatTable(models.Model):
         THURDAY = "THU", _("목요일"),
         FRIDAY = "FRI", _("금요일"),
         SATURDAY = "SAT", _("토요일"),
-        SUNDAY = "SUN", _("일요일일")
+        SUNDAY = "SUN", _("일요일")
 
     weekday = models.CharField(max_length=3, choices=Weekday.choices, default=Weekday.MONDAY)
     time = models.TimeField()
