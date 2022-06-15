@@ -28,5 +28,6 @@ urlpatterns = [
     path("logout/", LogoutView.as_view(), name="logout"),
     path("verify/", VerificationView.as_view(), name="verification"),
 
-    path("oauth/", include("allauth.urls"))
+    path("oauth/", include("allauth.urls")),
+    path('__debug__/', include('debug_toolbar.urls')),
 ]
