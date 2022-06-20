@@ -22,10 +22,10 @@
                         </div>
                         <img src="{{ item.restaurant.main_image.image }}" alt="" class="card-img-top">
                         <div class="card-body">
-                            <h5 class="card-title">
-                                {{ item.restaurant.name }}
-                                <p class="card-text">{{ item.restaurant.address }}</p>
-                            </h5>
+                            <a href="{% url 'restaurant-view' item.restaurant.id %}">
+                                <h5 class="card-title">{{ item.restaurant.name }}</h5>
+                            </a>
+                            <p class="card-text">{{ item.restaurant.address }}</p>
                         </div>
                     </div>
                 </div>

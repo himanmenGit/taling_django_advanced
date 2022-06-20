@@ -31,7 +31,9 @@
                         </div>
                         <img src="{{ restaurant.main_image.image }}" alt="" class="card-img-top">
                         <div class="card-body">
-                            <h5 class="card-title">{{ restaurant.name }}</h5>
+                            <a href="{% url 'restaurant-view' restaurant.id %}">
+                                <h5 class="card-title item-name">{{ restaurant.name }}</h5>
+                            </a>
                             <p class="card-text">{{ restaurant.address }}</p>
                         </div>
                     </div>
@@ -47,7 +49,9 @@
                 </div>
                 <img src="" alt="" class="card-img-top item-image">
                 <div class="card-body">
-                    <h5 class="card-title item-name"></h5>
+                    <a href="{% url 'restaurant-view' '0' %}" class="item-link">
+                        <h5 class="card-title item-name"></h5>
+                    </a>
                     <p class="card-text item-address"></p>
                 </div>
             </div>
