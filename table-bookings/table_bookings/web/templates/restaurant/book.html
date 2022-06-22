@@ -24,9 +24,11 @@
                        value="">
             </div>
             <input type="hidden" name="order_number" value="{{ booking.order_number }}">
+            <input type="hidden" name="price" value="{{ booking.price }}">
             <button type="button" onclick="submitAndPay();">예약</button>
         </form>
     </section>
+    <script src="https://js.tosspayments.com/v1"></script>
     <script>
         function submitAndPay() {
             let form = document.querySelector("form");
@@ -35,6 +37,17 @@
             httpRequest.addEventListener("load", (e) => {
                 if (httpRequest.status === 200) {
                     // 결제 시작
+                    var clientKey = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq'
+                    var tossPayments = TossPayments(clientKey) // 클라이언트 키로 초기화하기
+                    tossPayments.requestPayment('카드', { // 결제 수단 파라미터
+                      // 결제 정보 파라미터
+                      amount: form.price.value,
+                      orderId: form.order_number.value,
+                      orderName: '예약 보증금 결제',
+                      customerName: form.booker_name.value,
+                      successUrl: 'http://127.0.0.1:8000{% url 'payment' 'success' %}',
+                      failUrl: 'http://127.0.0.1:8000{% url 'payment' 'fail' %}',
+                    })
                 }
             });
 

@@ -18,7 +18,7 @@ from django.urls import path, include
 
 from web.views.main import IndexView, SearchView, SearchJsonView
 from web.views.users import RegisterView, LoginView, LogoutView, VerificationView
-from web.views.restaurant import RestaurantView, BookingView
+from web.views.restaurant import RestaurantView, BookingView, PayView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,7 +33,9 @@ urlpatterns = [
     path("search/json/", SearchJsonView.as_view(), name="search-json"),
 
     path("restaurant/<int:restaurant_id>/", RestaurantView.as_view(), name="restaurant-view"),
-    path("restaurant/<int:restaurant_id>/booking/<int:seat_id>/", BookingView.as_view(), name="booking"),
+    path("restaurant/<int:restaurant_id>/booking/<int:seat_id>", BookingView.as_view(), name="booking"),
+
+    path("restaurant/confirm/<str:status>", PayView.as_view(), name="payment"),
 
     path("oauth/", include("allauth.urls")),
     # path('__debug__/', include('debug_toolbar.urls')),

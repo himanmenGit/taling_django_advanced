@@ -1,0 +1,17 @@
+{% extends "common.html" %}
+{% load search_tags %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}테이블 부킹{% endblock %}
+
+{% block content %}
+<section class="mt-4">
+    {% if booking.status == 'PAID' %}
+    예약번호: {{ booking.order_number }}<br>
+    예약이 성공하였습니다.
+    {% else %}
+    예약에 실패했습니다.
+    {% endif %}
+</section>
+{% endblock %}

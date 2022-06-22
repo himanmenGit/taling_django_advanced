@@ -1,4 +1,4 @@
-import datetime
+import datetime, requests
 from datetime import timedelta, date
 import random
 
@@ -21,7 +21,7 @@ from ..utils import convert_weekday
 
 @transaction.atomic
 def fetch_remain_and_return_expired_booking(slot_day: date, time: RestaurantTable):
-    seat_datetime = timezone.datetime.combine(slot_day, time.time)
+    seat_datetime = datetime.datetime.combine(slot_day, time.time)
     seat, created = AvailableSeat.objects.get_or_create(
         restaurant=time.restaurant,
         table=time,
@@ -32,12 +32,12 @@ def fetch_remain_and_return_expired_booking(slot_day: date, time: RestaurantTabl
     )
 
     if not created:
-        created_time = timezone.datetime.now() - datetime.timedelta(minutes=10)
+        created_time = datetime.datetime.now() - datetime.timedelta(minutes=10)
         expired_count = Booking.objects.filter(seat=seat) \
             .filter(status=Booking.PayStatus.READY) \
             .filter(created_at__lt=created_time) \
             .update(status=Booking.PayStatus.FAILED)
-        seat.remain = seat.remain - expired_count
+        seat.remain = seat.remain + expired_count
         seat.save()
 
     return {
@@ -110,6 +110,7 @@ class BookingView(LoginRequiredMixin, TemplateView):
                 restaurant=seat.restaurant,
                 table=seat.table,
                 seat=seat,
+                status=Booking.PayStatus.READY,
                 defaults={
                     "price": seat.table.price,
                     "order_number": new_order_number
@@ -143,3 +144,44 @@ class BookingView(LoginRequiredMixin, TemplateView):
         booking.save()
 
         return JsonResponse({}, safe=False)
+
+
+class PayView(TemplateView):
+    template_name = "restaurant/confirm.html"
+
+    def get_context_data(self, status):
+        pg_key = self.request.GET.get("paymentKey")
+        order_number = self.request.GET.get("orderId")
+        amount = self.request.GET.get("amount", 0)
+
+        booking = get_object_or_404(Booking, order_number=order_number)
+
+        if booking.price != int(amount) or booking.status != Booking.PayStatus.READY:
+            raise PermissionDenied()
+
+        if status == "success":
+            response = requests.post("https://api.tosspayments.com/v1/payments/" + pg_key, json={
+                "amount": amount,
+                "orderId": order_number
+            }, headers={
+                "Authorization": "Basic dGVzdF9za196WExrS0V5cE5BcldtbzUwblgzbG1lYXhZRzVSOg==",
+                "Content-Type": "application/json"
+            })
+
+            with transaction.atomic():
+                booking = get_object_or_404(Booking, order_number=order_number)
+                booking.pg_transaction_number = pg_key
+
+                if response.ok:
+                    booking.status = Booking.PayStatus.PAID
+                    booking.paid_at = timezone.now()
+                else:
+                    booking.status = Booking.PayStatus.FAILED
+                booking.save()
+        else:
+            booking.status = Booking.PayStatus.FAILED
+            booking.save()
+
+        return {
+            "booking": booking
+        }
