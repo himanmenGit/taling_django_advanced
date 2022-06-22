@@ -75,3 +75,50 @@ class Recommendation(models.Model):
     sort = models.IntegerField(default=9999)
     visible = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
+
+
+class AvailableSeat(models.Model):
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    table = models.ForeignKey(RestaurantTable, on_delete=models.CASCADE)
+    datetime = models.DateTimeField()
+    remain = models.IntegerField(default=-1)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+
+    class Meta:
+        unique_together = ["restaurant", "table", "datetime"]
+
+
+class Booking(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    table = models.ForeignKey(RestaurantTable, on_delete=models.CASCADE)
+    seat = models.ForeignKey(AvailableSeat, on_delete=models.CASCADE)
+
+    class PayMethod(models.TextChoices):
+        CARD = "CARD", _("카드"),
+
+    class PayStatus(models.TextChoices):
+        READY = "READY", _("결제대기"),
+        PAID = "PAID", _("결제완료"),
+        FAILED = "FAILED", _("예약실패"),
+        CANCELED = "CANCELED", _("예약취소"),
+
+    order_number = models.CharField(max_length=20)
+    pg_transaction_number = models.CharField(max_length=50, null=True, default=None)
+    method = models.CharField(max_length=4, choices=PayMethod.choices, default=PayMethod.CARD)
+    status = models.CharField(max_length=10, choices=PayStatus.choices, default=PayStatus.READY)
+    price = models.DecimalField(max_digits=12, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+
+    paid_at = models.DateTimeField(null=True, default=None)
+    canceled_at = models.DateTimeField(null=True, default=None)
+
+    booker_name = models.CharField(max_length=20, default=None, null=True)
+    booker_phone = models.CharField(max_length=20, default=None, null=True)
+    booker_comment = models.CharField(max_length=200, default=None, null=True)
+
+
+class PayHistory(models.Model):
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
