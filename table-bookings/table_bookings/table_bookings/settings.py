@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "django.contrib.sites",
     "django.contrib.humanize",
+    "crispy_forms",
 
     "web",
 
@@ -176,7 +177,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / "web/static"
+    BASE_DIR / "static"
 ]
 
 MEDIA_ROOT = ROOT_DIR / ".media"
@@ -213,3 +214,9 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     },
 }
+
+SOCIALACCOUNT_ADAPTER = "web.models.CustomSocialAccountAdapter"
+ACCOUNT_UNIQUE_EMAIL = False
+
+# crispy
+CRISPY_TEMPLATE_PACK = "bootstrap4"
