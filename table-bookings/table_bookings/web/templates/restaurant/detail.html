@@ -62,4 +62,30 @@
             </div>
         </div>
     </section>
+
+    <section class="mt-4">
+        <div class="row">
+            <div class="col-12 list-group">
+                <h6>후기
+                    {% if ratings.avg %}
+                    |{{ ratings.avg }}
+                    {% endif %}
+                </h6>
+            <div class="list-group">
+            {% if reviews %}
+                {% for review in reviews %}
+                    <div class="list-group-item list-group-item-action">
+                    평점: {{ review.ratings }}<br>
+                    {{ review.comment }}
+                    </div>
+                {% endfor %}
+                {% else %}
+                <div class="list-group-item list-group-item-action">
+                후기가 없습니다.
+                </div>
+            {% endif %}
+            </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}

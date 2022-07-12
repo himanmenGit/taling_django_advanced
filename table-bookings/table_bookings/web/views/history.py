@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.views.generic import ListView
 
-from ..models import Booking
+from ..models import Booking, PayHistory
 
 
 class BookingHistoryView(ListView):
@@ -44,4 +44,5 @@ class BookingCancelView(View):
                 booking.seat.remain += 1
                 booking.save()
                 booking.seat.save()
+                PayHistory.objects.create(booking=booking, amount=-booking.price)
         return redirect("booking-history")

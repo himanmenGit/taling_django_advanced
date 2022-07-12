@@ -1,4 +1,6 @@
 from django import template
+from django.utils import timezone
+
 from ..models import Booking
 
 register = template.Library()
@@ -15,3 +17,9 @@ def convert_status_korean(status: Booking.PayStatus):
     elif status == Booking.PayStatus.PAID:
         return "예약 완료"
     return ""
+
+
+@register.filter(name="is_available_review")
+def is_available_review(booking: Booking):
+    now = timezone.now()
+    return booking.status == Booking.PayStatus.PAID and booking.seat.datetime < now and booking.review is None

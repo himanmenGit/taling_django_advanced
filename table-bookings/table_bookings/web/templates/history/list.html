@@ -24,6 +24,12 @@
                 <a href="{% url 'booking-cancel' item.id %}">
                     <button class="btn btn-danger">예약 취소</button>
                 </a>
+
+                {% if item|is_available_review %}
+                    <a href="{% url 'review-create' item.id %}">
+                        <button class="btn btn-info">리뷰 작성</button>
+                    </a>
+                {% endif %}
             </div>
             {% endif %}
         </div>

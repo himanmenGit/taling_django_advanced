@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.socialaccount.models import SocialAccount
@@ -125,10 +126,23 @@ class Booking(models.Model):
     booker_phone = models.CharField(max_length=20, default=None, null=True)
     booker_comment = models.CharField(max_length=200, default=None, null=True)
 
+    review = models.OneToOneField("Review", on_delete=models.SET_NULL, null=True, default=None)
+
 
 class PayHistory(models.Model):
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+
+
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    comment = models.CharField(max_length=1000, verbose_name=_("코멘트"))
+    ratings = models.PositiveIntegerField(
+        verbose_name=_("평점"),
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
 

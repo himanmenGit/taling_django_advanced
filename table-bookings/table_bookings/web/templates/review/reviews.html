@@ -1,0 +1,65 @@
+{% extends "common.html" %}
+{% load pagination_tags %}
+{% load booking_tags %}
+{% load humanize %}
+
+{% block title %}리뷰 내역{% endblock %}
+
+{% block content %}
+
+<div class="row g-4 mt-2">
+  <div class="col-12 list-group">
+    {% for item in object_list %}
+    <div class="list-group-item list-group-item-action">
+      <span class="badge badge-primary">{{ item.ratings }}</span><br>
+      식당: {{ item.restaurant.name }}<br>
+      주소: {{ item.restaurant.address }}<br>
+      작성일자: {{ item.created_at|date:'Y년 m월 d일 H시 i분' }}<br>
+      코멘트: {{ item.comment }}<br>
+      <div class="mt-4 float-right">
+        <a href="{% url 'review-update' item.id %}">
+          <button class="btn btn-info">수정</button>
+        </a>
+        <a href="{% url 'review-delete' item.id %}">
+          <button class="btn btn-danger">삭제</button>
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+<div class="row mt-4">
+  <nav class="col-12">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link"
+           href="?page={{ page_obj.previous_page_number }}">이전</a>
+      </li>
+      {% endif %}
+
+      {% for page in page_obj|slice_visible_pages %}
+      {% if page_obj.number == page %}
+      <li class="page-item active">
+        {% else %}
+      <li class="page-item">
+        {% endif %}
+        <a class="page-link" href="?page={{ page }}">
+          {{ page }}
+        </a>
+      </li>
+
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link"
+           href="?page={{ page_obj.next_page_number }}">다음</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+{% endblock %}
