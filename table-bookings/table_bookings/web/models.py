@@ -35,20 +35,23 @@ class Category(models.Model):
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True, null=False)
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class Restaurant(models.Model):
-    name = models.CharField(max_length=200, db_index=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    main_image = models.ForeignKey("RestaurantImage", related_name="main_image", null=True, on_delete=models.CASCADE)
-    address = models.CharField(max_length=300, db_index=True)
-    phone = models.CharField(max_length=20)
-    visible = models.BooleanField(default=True)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    menu_info = models.TextField(null=True)
-    description = models.TextField(null=True)
+    name = models.CharField(max_length=200, db_index=True, verbose_name=_("이름"))
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name=_("카테고리"))
+    main_image = models.ForeignKey("RestaurantImage", related_name="main_image", null=True, on_delete=models.CASCADE, verbose_name=_("메인 이미지"))
+    address = models.CharField(max_length=300, db_index=True, verbose_name=_("주소"))
+    phone = models.CharField(max_length=20, verbose_name=_("연락처"))
+    visible = models.BooleanField(default=True, verbose_name=_("표시 여부"))
+    latitude = models.FloatField(null=True, default=None, verbose_name=_("위도"))
+    longitude = models.FloatField(null=True, default=None, verbose_name=_("경도"))
+    created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name=_("생성일시"))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("수정일시"))
+    menu_info = models.TextField(null=True, verbose_name=_("메뉴 정보"))
+    description = models.TextField(null=True, verbose_name=_("설명"))
 
 
 class RestaurantImage(models.Model):
