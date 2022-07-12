@@ -2,17 +2,19 @@ import requests
 
 from django.utils import timezone
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.views.generic import ListView
+from django.core.exceptions import PermissionDenied
 
 from ..models import Booking, PayHistory
 
 
-class BookingHistoryView(ListView):
+class BookingHistoryView(LoginRequiredMixin, ListView):
     model = Booking
-    template_name = "history/list.html"
+    template_name = "booking/list.html"
     paginate_by = 5
 
     def get_queryset(self):
@@ -21,9 +23,13 @@ class BookingHistoryView(ListView):
         ).exclude(status=Booking.PayStatus.FAILED).exclude(status=Booking.PayStatus.READY)
 
 
-class BookingCancelView(View):
+class BookingCancelView(LoginRequiredMixin, View):
     def get(self, request, booking_id):
         booking = get_object_or_404(Booking, id=booking_id)
+
+        if booking.user != self.request.user:
+            raise PermissionDenied()
+
         if booking.status != Booking.PayStatus.PAID:
             messages.warning(request, "취소할 수 없는 예약입니다.")
             return redirect("booking-history")

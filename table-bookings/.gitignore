@@ -415,7 +415,7 @@ modules.xml
 *.vsix
 
 ### VisualStudioCode Patch ###
-# Ignore all local history of files
+# Ignore all local booking of files
 .history
 .ionide
 

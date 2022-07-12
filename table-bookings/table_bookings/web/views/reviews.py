@@ -1,17 +1,18 @@
 from django.utils import timezone
-from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 from django.core.exceptions import PermissionDenied
 
-from ..models import Review, Restaurant, Booking
+from ..models import Review, Booking
 
 
-class ReviewCreateView(CreateView):
+class ReviewCreateView(LoginRequiredMixin, CreateView):
     model = Review
     fields = ["comment", "ratings"]
     template_name = "review/create.html"
-    success_url = reverse_lazy("booking-history")
+    success_url = reverse_lazy("review-history")
 
     def form_valid(self, form):
         booking_id = self.kwargs["booking_id"]
@@ -31,3 +32,42 @@ class ReviewCreateView(CreateView):
         booking.save()
 
         return super().form_valid(form)
+
+
+class ReviewUpdateView(LoginRequiredMixin, UpdateView):
+    model = Review
+    pk_url_kwarg = "review_id"
+    fields = ["comment", "ratings"]
+    template_name = "review/update.html"
+    success_url = reverse_lazy("review-history")
+
+    def form_valid(self, form):
+        review = self.get_object()
+        if self.request.user != review.user:
+            raise PermissionDenied()
+
+        return super().form_valid(form)
+
+
+class ReviewDeleteView(LoginRequiredMixin, DeleteView):
+    model = Review
+    pk_url_kwarg = "review_id"
+    success_url = reverse_lazy("review-history")
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.request.user != self.object.user:
+            raise PermissionDenied()
+        return super().form_valid(None)
+
+
+class ReviewHistoryView(LoginRequiredMixin, ListView):
+    model = Review
+    template_name = "review/reviews.html"
+    paginate_by = 5
+
+    def get_queryset(self):
+        return Review.objects.filter(user=self.request.user)

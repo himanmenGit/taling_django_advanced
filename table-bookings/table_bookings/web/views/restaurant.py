@@ -91,7 +91,7 @@ class RestaurantView(TemplateView):
         }
 
 
-class BookingView(LoginRequiredMixin, TemplateView):
+class RestaurantBookingView(LoginRequiredMixin, TemplateView):
     template_name = "restaurant/book.html"
     login_url = reverse_lazy("login")
 
@@ -151,7 +151,7 @@ class BookingView(LoginRequiredMixin, TemplateView):
         return JsonResponse({}, safe=False)
 
 
-class PayView(TemplateView):
+class RestaurantPayView(TemplateView):
     template_name = "restaurant/confirm.html"
 
     def get_context_data(self, status):

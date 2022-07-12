@@ -45,8 +45,8 @@
                       orderId: form.order_number.value,
                       orderName: '예약 보증금 결제',
                       customerName: form.booker_name.value,
-                      successUrl: 'http://127.0.0.1:8000{% url 'payment' 'success' %}',
-                      failUrl: 'http://127.0.0.1:8000{% url 'payment' 'fail' %}',
+                      successUrl: 'http://127.0.0.1:8000{% url 'restaurant-payment' 'success' %}',
+                      failUrl: 'http://127.0.0.1:8000{% url 'restaurant-payment' 'fail' %}',
                     })
                 }
             });
