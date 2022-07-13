@@ -1,0 +1,16 @@
+{% extends "office/common.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-12">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <label for="main_image">메인 이미지</label>
+            <input type="file" id="main_image" name="main_image"/>
+            <button type="submit" class="btn btn-primary float-right">작성하기</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

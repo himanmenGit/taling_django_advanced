@@ -1,0 +1,86 @@
+{% extends "office/common.html" %}
+{% load pagination_tags %}
+{% load booking_tags %}
+{% load humanize %}
+
+{% block content %}
+
+<div class="row g-4 mt-2">
+    <div class="col-12 list-group">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">번호</th>
+                <th scope="col">일자</th>
+                <th scope="col">식당</th>
+                <th scope="col">상태</th>
+                <th scope="col">결제정보</th>
+                <th scope="col">비고</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in object_list %}
+            <tr>
+                <th scope="row">{{ item.order_number }}</th>
+                <td>{{ item.seat.datetime|date:'m/d H:i' }}</td>
+                <td>{{ item.restaurant.name }}</td>
+                <td>{{ item.status|convert_status_korean }}</td>
+                <td>{% if item.status == 'PAID' %}
+                        {{ item.paid_at|date:'m/d H:i' }}<br>
+                    {% elif item.status == 'CANCELED' %}
+                        {{ item.canceled_at|date:'m/d H:i' }}<br>
+                    {% endif %}
+                    {{ item.price|floatformat:0|intcomma }}원<br>
+                    {{ item.method }}
+                </td>
+                <td>
+                    <a href="{% url 'office-booking-update' item.id %}">
+                        <button class="btn btn-link">수정</button>
+                    </a>
+                    <a href="{% url 'office-booking-cancel' item.id %}">
+                        <button class="btn btn-link">취소</button>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+
+<div class="row mt-4">
+    <nav class="col-12">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ page_obj.previous_page_number }}">이전</a>
+            </li>
+            {% endif %}
+
+            {% for page in page_obj|slice_visible_pages %}
+            {% if page_obj.number == page %}
+            <li class="page-item active">
+                {% else %}
+            <li class="page-item">
+                {% endif %}
+                <a class="page-link" href="?page={{ page }}">
+                    {{ page }}
+                </a>
+            </li>
+
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ page_obj.next_page_number }}">다음</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+{% endblock %}

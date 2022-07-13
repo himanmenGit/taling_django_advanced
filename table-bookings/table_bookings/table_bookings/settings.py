@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "crispy_forms",
 
     "web",
+    "office",
 
     # "debug_toolbar",
     "corsheaders",
