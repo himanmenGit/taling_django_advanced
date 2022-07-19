@@ -151,8 +151,9 @@ class RestaurantBookingView(LoginRequiredMixin, TemplateView):
         return JsonResponse({}, safe=False)
 
 
-class RestaurantPayView(TemplateView):
+class RestaurantPayView(LoginRequiredMixin, TemplateView):
     template_name = "restaurant/confirm.html"
+    login_url = reverse_lazy("login")
 
     def get_context_data(self, status):
         pg_key = self.request.GET.get("paymentKey")

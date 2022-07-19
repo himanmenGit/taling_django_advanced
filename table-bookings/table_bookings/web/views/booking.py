@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.views.generic import ListView
 from django.core.exceptions import PermissionDenied
+from django.urls import reverse_lazy
 
 from ..models import Booking, PayHistory
 
@@ -16,6 +17,7 @@ class BookingHistoryView(LoginRequiredMixin, ListView):
     model = Booking
     template_name = "booking/list.html"
     paginate_by = 5
+    login_url = reverse_lazy("login")
 
     def get_queryset(self):
         return Booking.objects.filter(
@@ -24,6 +26,7 @@ class BookingHistoryView(LoginRequiredMixin, ListView):
 
 
 class BookingCancelView(LoginRequiredMixin, View):
+    login_url = reverse_lazy("login")
     def get(self, request, booking_id):
         booking = get_object_or_404(Booking, id=booking_id)
 

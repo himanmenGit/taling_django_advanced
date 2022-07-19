@@ -13,6 +13,7 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
     fields = ["comment", "ratings"]
     template_name = "review/create.html"
     success_url = reverse_lazy("review-history")
+    login_url = reverse_lazy("login")
 
     def form_valid(self, form):
         booking_id = self.kwargs["booking_id"]
@@ -40,6 +41,7 @@ class ReviewUpdateView(LoginRequiredMixin, UpdateView):
     fields = ["comment", "ratings"]
     template_name = "review/update.html"
     success_url = reverse_lazy("review-history")
+    login_url = reverse_lazy("login")
 
     def form_valid(self, form):
         review = self.get_object()
@@ -53,6 +55,7 @@ class ReviewDeleteView(LoginRequiredMixin, DeleteView):
     model = Review
     pk_url_kwarg = "review_id"
     success_url = reverse_lazy("review-history")
+    login_url = reverse_lazy("login")
 
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
@@ -68,6 +71,7 @@ class ReviewHistoryView(LoginRequiredMixin, ListView):
     model = Review
     template_name = "review/reviews.html"
     paginate_by = 5
+    login_url = reverse_lazy("login")
 
     def get_queryset(self):
         return Review.objects.filter(user=self.request.user)

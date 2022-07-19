@@ -10,23 +10,37 @@ from django.views.generic import ListView, UpdateView
 
 from web.models import Booking, PayHistory
 
+from ..views.permission import BookingPermissionRequiredMixin
 
-class BookingListView(ListView):
+
+class BookingListView(BookingPermissionRequiredMixin, ListView):
     model = Booking
     paginate_by = 10
     template_name = "office/booking/list.html"
     ordering = ["-created_at"]
+    permission_required = "web.manage_booking"
+    login_url = reverse_lazy("login")
+
+    def get_queryset(self):
+        return self.get_booking_has_perms()
 
 
-class BookingUpdateView(UpdateView):
+class BookingUpdateView(BookingPermissionRequiredMixin, UpdateView):
     model = Booking
     fields = ["booker_name", "booker_phone", "booker_comment"]
     pk_url_kwarg = "booking_id"
     template_name = "office/booking/update.html"
     success_url = reverse_lazy("office-booking-list")
+    permission_required = "web.manage_booking"
+    check_permission_path_variable = "booking_id"
+    login_url = reverse_lazy("login")
 
 
-class BookingCancelView(View):
+class BookingCancelView(BookingPermissionRequiredMixin, View):
+    permission_required = "web.manage_booking"
+    check_permission_path_variable = "booking_id"
+    login_url = reverse_lazy("login")
+
     def get(self, request, booking_id):
         booking = get_object_or_404(Booking, id=booking_id)
 
