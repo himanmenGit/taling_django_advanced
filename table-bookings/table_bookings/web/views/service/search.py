@@ -2,12 +2,22 @@ import datetime
 
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
-from ...models import Restaurant, Category
 from django.db.models import Q
+from django.core.cache import cache
+
+from ...models import Restaurant, Category
 
 
 class RestaurantSearch:
+    def create_cache_key(self, keyword, category_id, weekday, start_time, end_time, page_number):
+        return f"{keyword}:{category_id}:{weekday}:{start_time}:{end_time}:{page_number}"
+
     def search(self, keyword, category_id, weekday, start_time, end_time, page_number):
+        cache_key = self.create_cache_key(keyword, category_id, weekday, start_time, end_time, page_number)
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return cached_data
+
         category = None
 
         queryset = Restaurant.objects.filter(visible=True).order_by("-created_at")
@@ -48,7 +58,7 @@ class RestaurantSearch:
 
         paging = paginator.get_page(page_number)
 
-        return {
+        result = {
             "paging": paging,
             "selected_keyword": keyword,
             "selected_category": category,
@@ -57,3 +67,5 @@ class RestaurantSearch:
             "selected_end": datetime.time.isoformat(end_time) if end_time else "",
             "has_next_page": paging.has_next()
         }
+        cache.set(cache_key, result, 60)
+        return result

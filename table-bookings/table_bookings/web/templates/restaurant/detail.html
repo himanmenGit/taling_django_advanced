@@ -1,6 +1,7 @@
 {% extends "common.html" %}
 {% load static %}
 {% load humanize %}
+{% load cache %}
 
 {% block title %}
     테이블 부킹
@@ -71,6 +72,7 @@
                     |{{ ratings.avg }}
                     {% endif %}
                 </h6>
+            {% cache 60 detail-review restaurant.id %}
             <div class="list-group">
             {% if reviews %}
                 {% for review in reviews %}
@@ -85,6 +87,7 @@
                 </div>
             {% endif %}
             </div>
+            {% endcache %}
             </div>
         </div>
     </section>

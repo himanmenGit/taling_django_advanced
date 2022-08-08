@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.decorators.cache import cache_page
 
 from .views.main import IndexView, SearchView, SearchJsonView
 from .views.users import RegisterView, LoginView, LogoutView, VerificationView, ProfileView, PasswordView
@@ -8,6 +9,7 @@ from .views.reviews import ReviewCreateView, ReviewUpdateView, ReviewDeleteView,
 
 urlpatterns = [
     # main
+    # path("", cache_page(60*15)(IndexView.as_view()), name="index"),
     path("", IndexView.as_view(), name="index"),
 
     # user
