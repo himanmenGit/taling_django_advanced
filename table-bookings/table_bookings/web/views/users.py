@@ -10,6 +10,9 @@ from django.utils import timezone
 from django.views.generic import FormView, UpdateView
 from django.views import View
 
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
+
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.contrib.auth.hashers import check_password
@@ -117,6 +120,11 @@ class ProfileView(LoginRequiredMixin, UpdateView):
     login_url = reverse_lazy("login")
 
     def get_object(self, queryset=None):
+        # try:
+        #     UserProfile.objects.get(pk=200)
+        # except UserProfile.DoesNotExist:
+        #     raise Http404
+
         return UserProfile.objects.get(user=self.request.user)
 
     def get_context_data(self, **kwargs):

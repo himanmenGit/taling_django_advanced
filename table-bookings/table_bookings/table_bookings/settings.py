@@ -100,6 +100,7 @@ MIDDLEWARE = [
     # "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "corsheaders.middleware.CorsMiddleware",
+    # "table_bookings.middleware.ExceptionMiddleware"
 ]
 
 AUTHENTICATION_BACKENDS = [
