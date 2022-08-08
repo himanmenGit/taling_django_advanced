@@ -221,3 +221,15 @@ ACCOUNT_UNIQUE_EMAIL = False
 
 # crispy
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+# session
+# SESSION_ENGINE = "redis_sessions.session"
+# SESSION_REDIS = {
+#     "host": "127.0.0.1",
+#     "port": 6379,
+#     "db": 0,
+#     "prefix": "session",
+#     "socket_timeout": 1,
+#     "retry_on_timeout": False,
+#     "password": "passw0rd!**"
+# }
