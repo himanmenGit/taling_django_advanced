@@ -23,6 +23,7 @@ urlpatterns = [
     path("office/", include("office.urls")),
     path('admin/', admin.site.urls),
     path("oauth/", include("allauth.urls")),
+    path("prometheus/", include("django_prometheus.urls")),
     # path('__debug__/', include('debug_toolbar.urls')),
 ]
 

@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     # "debug_toolbar",
     "corsheaders",
     "storages",
+    "django_prometheus",
 
     # All auth
     "allauth",
@@ -92,6 +93,7 @@ CORS_ALLOW_HEADERS = [
 ]
 
 MIDDLEWARE = [
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -101,6 +103,8 @@ MIDDLEWARE = [
     # "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "corsheaders.middleware.CorsMiddleware",
+    "request_logging.middleware.LoggingMiddleware",
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
     # "table_bookings.middleware.ExceptionMiddleware"
 ]
 
@@ -189,14 +193,15 @@ AWS_S3_OBJECT_PARAMETERS = {
 AWS_DEFAULT_ACL = "public-read"
 STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
-STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static"
+# STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
 
-# MEDIA_ROOT = ROOT_DIR / ".media"
-# MEDIA_URL = "/media/"
-DEFAULT_FILE_STORAGE = "table_bookings.config.MediaStorage"
+MEDIA_ROOT = ROOT_DIR / ".media"
+MEDIA_URL = "/media/"
+# DEFAULT_FILE_STORAGE = "table_bookings.config.MediaStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -256,3 +261,51 @@ CACHES = {
 }
 
 CSRF_TRUSTED_ORIGINS = ['https://b422-211-253-114-115.ngrok.io/']
+
+# logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    # Formatter
+    'formatters': {
+        'basic_format': {
+            'format': '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s',
+            'datefmt': '%d/%b/%Y %H:%M:%S'
+        },
+    },
+
+    # Handler
+    'handlers': {
+        # 파일 출력
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': '../logs/app.log',
+            'maxBytes': 1024*1024*15,  # 15MB
+            'backupCount': 10,
+            'formatter': 'basic_format',
+        },
+        # 콘솔 출력
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'basic_format',
+        }
+    },
+
+    # 로거
+    'loggers': {
+        # 웹 앱에 대해 출력
+        'web': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
+        # 요청 출력
+        'django.request': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}

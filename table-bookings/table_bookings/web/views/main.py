@@ -1,9 +1,14 @@
+import logging
+
 from django.views.generic import TemplateView, View
 from django.http import JsonResponse
 from django.db.models import Avg
 
 from ..models import Recommendation, Restaurant
 from .service.search import RestaurantSearch
+
+
+logger = logging.getLogger(__name__)
 
 
 class IndexView(TemplateView):
@@ -26,6 +31,9 @@ class IndexView(TemplateView):
             "latest": latest,
             "hottest": hottest
         })
+
+        logger.info("recommenations: %d", len(recommendation))
+
         return context
 
 
