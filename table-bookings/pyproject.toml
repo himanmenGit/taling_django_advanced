@@ -15,6 +15,8 @@ django-allauth = "^0.51.0"
 django-debug-toolbar = "^3.4.0"
 django-cors-headers = "^3.13.0"
 django-crispy-forms = "^1.14.0"
+boto3 = "^1.24.48"
+django-storages = "^1.13.1"
 
 [tool.poetry.dev-dependencies]
 

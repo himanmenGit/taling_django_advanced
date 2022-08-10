@@ -60,6 +60,7 @@ INSTALLED_APPS = [
 
     # "debug_toolbar",
     "corsheaders",
+    "storages",
 
     # All auth
     "allauth",
@@ -180,13 +181,22 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = '/static/'
+AWS_STORAGE_BUCKET_NAME = "taling-bucket"
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+AWS_S3_OBJECT_PARAMETERS = {
+    "CacheControl": "max-age=86400"
+}
+AWS_DEFAULT_ACL = "public-read"
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static"
 STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
 
-MEDIA_ROOT = ROOT_DIR / ".media"
-MEDIA_URL = "/media/"
+# MEDIA_ROOT = ROOT_DIR / ".media"
+# MEDIA_URL = "/media/"
+DEFAULT_FILE_STORAGE = "table_bookings.config.MediaStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -244,3 +254,5 @@ CACHES = {
         "LOCATION": "redis://:passw0rd!**@127.0.0.1:6379",
     }
 }
+
+CSRF_TRUSTED_ORIGINS = ['https://b422-211-253-114-115.ngrok.io/']
